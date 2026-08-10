@@ -1,17 +1,99 @@
-# task_app
+# Senkai
 
-A new Flutter project.
+App de gestión de tareas con autenticación y base de datos en la nube.
 
-## Getting Started
+## Funcionalidades
 
-This project is a starting point for a Flutter application.
+- Registro e inicio de sesión con email y contraseña
+- Sesión persistente
+- CRUD de tareas: crear, editar, marcar como completada y eliminar
+- Filtros: Todas, Pendientes, Completadas
+- Tema oscuro con Material 3
 
-A few resources to get you started if this is your first Flutter project:
+## Stack
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- **Flutter** 3.x (Dart)
+- **Supabase** (Auth + PostgreSQL + RLS)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Requisitos
+
+- Flutter SDK ^3.12.2
+- Proyecto en [Supabase](https://supabase.com) con Auth por email habilitado
+
+## Instalación
+
+```bash
+git clone <url-del-repo>
+cd task_app
+flutter pub get
+```
+
+## Configuración
+
+1. Copia `.env.example` a `.env`:
+
+```bash
+cp .env.example .env
+```
+
+2. Edita `.env` con los datos de tu proyecto en Supabase:
+
+```
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_ANON_KEY=tu_publishable_key
+```
+
+> Las claves se empaquetan en el build. Si editas `.env`, hacé un rebuild completo.
+
+## Base de datos
+
+Ejecutá este SQL en el SQL Editor de Supabase para crear la tabla `tasks` y las políticas RLS:
+
+```sql
+CREATE TABLE tasks (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  is_completed BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Usuarios ven sus propias tareas"
+  ON tasks FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios crean sus propias tareas"
+  ON tasks FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios editan sus propias tareas"
+  ON tasks FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuarios eliminan sus propias tareas"
+  ON tasks FOR DELETE
+  USING (auth.uid() = user_id);
+```
+
+## Ejecutar
+
+```bash
+flutter run -d chrome
+```
+# Build de producción con claves
+flutter build web --dart-define=SUPABASE_URL=tu_url --dart-define=SUPABASE_ANON_KEY=tu_key
+
+## Estructura del proyecto
+
+```
+lib/
+├── main.dart              # entrada de la app y tema
+├── config/                # configuración de Supabase
+├── models/                # modelo Task
+├── services/              # auth_service, task_service
+├── screens/               # login, register, home
+└── widgets/               # componentes reutilizables
+```
