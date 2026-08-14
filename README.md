@@ -102,3 +102,4 @@ lib/
 ├── services/              # auth_service, task_service
 ├── screens/               # login, register, home
 ```
+
