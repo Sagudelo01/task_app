@@ -1,5 +1,6 @@
 import '../../config/supabase_config.dart';
 
+// Maneja la autenticación de usuarios con Supabase Auth
 class AuthService {
   // Inicia sesión con email y contraseña
   Future<void> signIn(String email, String password) async {

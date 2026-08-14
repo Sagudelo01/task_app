@@ -1,6 +1,7 @@
 import '../config/supabase_config.dart';
 import '../models/task.dart';
 
+// Maneja las operaciones CRUD de tareas en Supabase
 class TaskService {
   final _table = 'tasks';
 

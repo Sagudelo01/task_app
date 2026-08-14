@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
+// Pantalla de inicio de sesión
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -9,6 +10,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // Controladores y estado del formulario
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService = AuthService();
@@ -16,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String? _error;
 
+  // Valida el formulario e intenta iniciar sesión
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -40,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // Libera los controladores al cerrar la pantalla
   @override
   void dispose() {
     _emailController.dispose();
@@ -52,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
+          // Formulario de login: logo, email, contraseña y acciones
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,

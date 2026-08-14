@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 
+// Pantalla de registro de nuevos usuarios
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -9,6 +10,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  // Controladores y estado del formulario
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService = AuthService();
@@ -16,6 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   String? _error;
 
+  // Valida el formulario y crea la cuenta en Supabase
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -42,6 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  // Libera los controladores al cerrar la pantalla
   @override
   void dispose() {
     _emailController.dispose();
@@ -54,6 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
+          // Formulario de registro: email y contraseña con validación
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
@@ -79,6 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Ingresa tu email';
                     }
+                    // Verifica formato básico de email (texto@texto.texto)
                     if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
                         .hasMatch(value.trim())) {
                       return 'Ingresa un email válido';

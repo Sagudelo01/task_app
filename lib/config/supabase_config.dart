@@ -2,7 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Inicia Supabase. Las claves se toman de dart-define en producción,
-// o de dotenv (.env) como respaldo en desarrollo local.
+// o del archivo .env (desarrollo local) como respaldo
 Future<void> initSupabase() async {
   // Producción: definidas con --dart-define al hacer build
   const prodUrl = String.fromEnvironment('SUPABASE_URL');
@@ -19,5 +19,5 @@ Future<void> initSupabase() async {
   );
 }
 
-// Acceso rápido desde cualquier parte de la app
+// Cliente global de Supabase, accesible desde toda la app
 final supabase = Supabase.instance.client;

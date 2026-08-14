@@ -3,6 +3,7 @@ import '../models/task.dart';
 import '../services/auth_service.dart';
 import '../services/task_service.dart';
 
+// Pantalla principal: lista, crea, edita y elimina tareas
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -13,6 +14,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _authService = AuthService();
   final _taskService = TaskService();
+  // Estado: tareas cargadas, carga, error y filtro activo
   List<Task> _tasks = [];
   bool _isLoading = true;
   String? _error;
@@ -35,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _loadTasks();
   }
-
+  // Carga las tareas del usuario desde Supabase
   Future<void> _loadTasks() async {
     setState(() {
       _isLoading = true;
@@ -55,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Cierra sesión y vuelve al login
   Future<void> _signOut() async {
     await _authService.signOut();
     if (mounted) Navigator.pushReplacementNamed(context, '/login');
@@ -203,7 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
+  
+  // Construye la barra superior y el botón de agregar
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -225,6 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Muestra loading, error, estado vacío o la lista con filtros
   Widget _buildBody() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());

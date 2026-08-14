@@ -5,8 +5,8 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';
 
+// Este es el Punto de entrada: inicializa Supabase y arranca la app
 Future<void> main() async {
-  // Necesario antes de usar código async en main
   WidgetsFlutterBinding.ensureInitialized();
   // Carga .env para desarrollo local; en producción no existe y se usa dart-define
   try {
@@ -19,6 +19,7 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
+// Configuración raíz de la app: tema oscuro y rutas
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
