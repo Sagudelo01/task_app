@@ -2,6 +2,8 @@
 
 App de gestión de tareas con autenticación y base de datos en la nube.
 
+🔗 **Demo:** https://taskapp-orcin-zeta.vercel.app
+
 ## Funcionalidades
 
 - Registro e inicio de sesión con email y contraseña
@@ -43,11 +45,11 @@ SUPABASE_URL=https://tu-proyecto.supabase.co
 SUPABASE_ANON_KEY=tu_publishable_key
 ```
 
-> Las claves se empaquetan en el build. Si editas `.env`, hacé un rebuild completo.
+> Las claves se empaquetan en el build. Si editas `.env`, hace un rebuild completo.
 
 ## Base de datos
 
-Ejecutá este SQL en el SQL Editor de Supabase para crear la tabla `tasks` y las políticas RLS:
+Ejecuta este SQL en el SQL Editor de Supabase para crear la tabla `tasks` y las políticas RLS:
 
 ```sql
 CREATE TABLE tasks (
@@ -81,10 +83,14 @@ CREATE POLICY "Usuarios eliminan sus propias tareas"
 ## Ejecutar
 
 ```bash
-flutter run -d chrome
-```
-# Build de producción con claves
+# Desarrollo local
+flutter run -d chrome --web-port=3000
+
+# El puerto fijo 3000 es necesario para que coincida con el Site URL de Supabase y funcione la confirmación por email. Sin esto la confirmación no funcionará.
+
+# Build de producción
 flutter build web --dart-define=SUPABASE_URL=tu_url --dart-define=SUPABASE_ANON_KEY=tu_key
+```
 
 ## Estructura del proyecto
 
@@ -95,5 +101,4 @@ lib/
 ├── models/                # modelo Task
 ├── services/              # auth_service, task_service
 ├── screens/               # login, register, home
-└── widgets/               # componentes reutilizables
 ```
