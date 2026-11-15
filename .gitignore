@@ -48,3 +48,6 @@ app.*.map.json
 AGENTS.md
 SPEC.md
 PROGRESS.md
+
+# Local agent/editor config
+.claude/
