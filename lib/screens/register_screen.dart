@@ -60,6 +60,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: SingleChildScrollView(
           // Formulario de registro: email y contraseña con validación
           padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
           child: Form(
             key: _formKey,
             child: Column(
@@ -138,6 +140,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),

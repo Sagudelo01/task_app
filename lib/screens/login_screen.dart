@@ -58,6 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           // Formulario de login: logo, email, contraseña y acciones
           padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
           child: Form(
             key: _formKey,
             child: Column(
@@ -127,6 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),

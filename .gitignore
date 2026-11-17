@@ -51,3 +51,6 @@ PROGRESS.md
 
 # Local agent/editor config
 .claude/
+
+# Local Supabase config (dart-define-from-file)
+env.json
