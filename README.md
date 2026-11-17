@@ -1,23 +1,41 @@
 # Senkai
 
-A cross-platform task manager with email authentication and a cloud database. Sign in, manage your tasks and filter them by state; data syncs through Supabase with row-level security per user.
+A cross-platform task manager with email authentication and a cloud database. It ships two distinct layouts from a single codebase — a mobile view with bottom navigation and a desktop view with a sidebar — and syncs through Supabase with row-level security per user.
 
 **Live demo:** [taskapp-orcin-zeta.vercel.app](https://taskapp-orcin-zeta.vercel.app)
 
-<img src="docs/preview.png" alt="Senkai login screen" width="320" />
+| Mobile | Desktop |
+|---|---|
+| <img src="docs/mobile.png" alt="Senkai mobile layout" width="260" /> | ![Senkai desktop layout](docs/desktop.png) |
 
 ## Features
 
-- Email and password sign up and sign in
-- Persistent session
-- Task CRUD: create, edit, complete and delete
-- Filters: all, pending, completed
-- Material 3 dark theme
+- Email and password sign up and sign in, with a persistent session
+- Task CRUD with optimistic updates (the UI reacts instantly, then reverts on failure)
+- Filter by all / pending / completed and sort by date, title or pending-first
+- Responsive: bottom navigation on phones, a sidebar with counts on desktop
+- Light and dark themes, remembered across launches
+- Loading, empty and error states with retry and inline feedback
 
 ## Stack
 
 - Flutter (Dart)
 - Supabase — authentication, PostgreSQL and row-level security
+- `shared_preferences` for the theme setting
+
+## Architecture
+
+```
+lib/
+├── config/        Supabase initialization
+├── controllers/   TaskController (state) and ThemeController
+├── models/        Task model
+├── services/      Auth and task services (Supabase calls)
+├── widgets/       TaskList, TaskTile, task editor
+└── screens/       Login, register and the responsive home
+```
+
+State lives in a `ChangeNotifier` controller shared by both layouts, so the mobile and desktop views render the same data and logic.
 
 ## Requirements
 
@@ -26,26 +44,14 @@ A cross-platform task manager with email authentication and a cloud database. Si
 
 ## Setup
 
-Install dependencies:
+Credentials are passed at build time with `--dart-define`, so there is no `.env` bundled into the app. For local development, copy the example config and fill it in:
 
 ```bash
 git clone https://github.com/Sagudelo01/task_app.git
 cd task_app
 flutter pub get
+cp env.example.json env.json   # then edit env.json with your Supabase values
 ```
-
-Copy the env file and fill it with your Supabase project values:
-
-```bash
-cp .env.example .env
-```
-
-```
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_publishable_key
-```
-
-The keys are bundled at build time, so rebuild after changing `.env`.
 
 Create the `tasks` table and its row-level security policies in the Supabase SQL editor:
 
@@ -70,24 +76,21 @@ CREATE POLICY "Users delete their own tasks" ON tasks FOR DELETE USING (auth.uid
 ## Running
 
 ```bash
-flutter run -d chrome --web-port=3000
+flutter run -d chrome --web-port=3000 --dart-define-from-file=env.json
 ```
 
 The fixed port 3000 must match the Site URL set in Supabase so email confirmation resolves correctly.
 
-Production build:
+Production web build (WasmGC renderer, with a JavaScript fallback):
 
 ```bash
-flutter build web --dart-define=SUPABASE_URL=your_url --dart-define=SUPABASE_ANON_KEY=your_key
+flutter build web --release --wasm --dart-define-from-file=env.json
 ```
 
-## Project structure
+## Tests
 
+```bash
+flutter test
 ```
-lib/
-├── main.dart     app entry point and theme
-├── config/       Supabase configuration
-├── models/       Task model
-├── services/     auth and task services
-└── screens/      login, register, home
-```
+
+Covers the task controller: loading, create, optimistic toggle and delete, filtering and sorting.
