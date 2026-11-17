@@ -2,7 +2,7 @@
 
 A cross-platform task manager with email authentication and a cloud database. It ships two distinct layouts from a single codebase — a mobile view with bottom navigation and a desktop view with a sidebar — and syncs through Supabase with row-level security per user.
 
-**Live demo:** [taskapp-orcin-zeta.vercel.app](https://taskapp-orcin-zeta.vercel.app)
+**Live demo:** [sagudelo01.github.io/task_app](https://sagudelo01.github.io/task_app/)
 
 | Mobile | Desktop |
 |---|---|
@@ -44,13 +44,12 @@ State lives in a `ChangeNotifier` controller shared by both layouts, so the mobi
 
 ## Setup
 
-Credentials are passed at build time with `--dart-define`, so there is no `.env` bundled into the app. For local development, copy the example config and fill it in:
+Credentials are passed at build time with `--dart-define-from-file`. The repo ships an `env.json` with the public Supabase **publishable** key for the live demo (safe to expose — data is protected by row-level security). To point the app at your own project, edit `env.json`.
 
 ```bash
 git clone https://github.com/Sagudelo01/task_app.git
 cd task_app
 flutter pub get
-cp env.example.json env.json   # then edit env.json with your Supabase values
 ```
 
 Create the `tasks` table and its row-level security policies in the Supabase SQL editor:
