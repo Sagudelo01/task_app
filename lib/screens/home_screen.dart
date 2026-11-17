@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _signOut() async {
     await _auth.signOut();
-    if (mounted) Navigator.pushReplacementNamed(context, '/login');
+    // Navigation happens in the app-level auth listener.
   }
 
   void _newTask() => showTaskEditor(context, _controller);

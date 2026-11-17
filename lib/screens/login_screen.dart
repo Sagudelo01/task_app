@@ -32,10 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text.trim(),
         _passwordController.text,
       );
-      // Éxito: navegar a la pantalla principal
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
+      // Navigation happens in the app-level auth listener.
     } catch (e) {
       setState(() => _error = 'Email o contraseña incorrectos');
     } finally {
