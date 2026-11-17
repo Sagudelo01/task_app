@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/auth_service.dart';
+import 'check_email_screen.dart';
 
 // Pantalla de registro de nuevos usuarios
 class RegisterScreen extends StatefulWidget {
@@ -27,19 +29,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _error = null;
     });
 
+    final email = _emailController.text.trim();
     try {
-      await _authService.signUp(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registro exitoso. Revisa tu email para confirmar la cuenta.')),
-        );
-        Navigator.pop(context);
+      final res = await _authService.signUp(email, _passwordController.text);
+      // Supabase returns a user with no identities when the email already exists.
+      final identities = res.user?.identities;
+      if (identities != null && identities.isEmpty) {
+        setState(() => _error = 'Este correo ya está registrado. Inicia sesión.');
+        return;
       }
-    } catch (e) {
-      setState(() => _error = 'Error al registrarse. Intenta con otro email.');
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => CheckEmailScreen(email: email)),
+        );
+      }
+    } on AuthException catch (e) {
+      final msg = e.message.toLowerCase();
+      setState(() => _error = msg.contains('already')
+          ? 'Este correo ya está registrado. Inicia sesión.'
+          : 'No se pudo crear la cuenta. Intenta con otro correo.');
+    } catch (_) {
+      setState(() => _error = 'Error de red. Revisa tu conexión e intenta de nuevo.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
