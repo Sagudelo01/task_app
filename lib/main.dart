@@ -10,11 +10,24 @@ import 'screens/home_screen.dart';
 
 final _navigatorKey = GlobalKey<NavigatorState>();
 
+// Captured before Supabase initializes, since it may clear the redirect URL.
+String? _linkError;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  _linkError = _parseLinkError(Uri.base);
   await initSupabase();
   await themeController.load();
   runApp(const SenkaiApp());
+}
+
+/// Reads an auth error returned in the redirect URL (e.g. an expired link).
+String? _parseLinkError(Uri uri) {
+  final params = {...uri.queryParameters, ...Uri.splitQueryString(uri.fragment)};
+  if (params['error'] == null && params['error_code'] == null) return null;
+  return (params['error_code'] ?? '').contains('expired')
+      ? 'El enlace de confirmación expiró. Solicita uno nuevo.'
+      : 'El enlace de confirmación no es válido o ya se usó. Solicita uno nuevo.';
 }
 
 class SenkaiApp extends StatefulWidget {
@@ -42,20 +55,15 @@ class _SenkaiAppState extends State<SenkaiApp> {
       }
     });
 
-    final linkError = _authLinkError();
-    if (linkError != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _showLinkError(linkError));
+    if (_linkError != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showLinkError(_linkError!));
     }
   }
 
-  /// Reads an auth error carried back in the redirect URL (e.g. expired link).
-  String? _authLinkError() {
-    final uri = Uri.base;
-    final params = {...uri.queryParameters, ...Uri.splitQueryString(uri.fragment)};
-    if (params['error'] == null && params['error_code'] == null) return null;
-    return (params['error_code'] ?? '').contains('expired')
-        ? 'El enlace de confirmación expiró. Solicita uno nuevo.'
-        : 'El enlace de confirmación no es válido o ya se usó. Solicita uno nuevo.';
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
   }
 
   void _showLinkError(String message) {
@@ -78,12 +86,6 @@ class _SenkaiAppState extends State<SenkaiApp> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _authSub?.cancel();
-    super.dispose();
   }
 
   @override
