@@ -26,6 +26,8 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build web --release --wasm --base-href /task_app/ --dart-define-from-file=env.json
+      # SPA fallback so deep links under the site resolve to the app.
+      - run: cp build/web/index.html build/web/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
