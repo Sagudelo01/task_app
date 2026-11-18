@@ -41,6 +41,43 @@ class _SenkaiAppState extends State<SenkaiApp> {
         nav.pushNamedAndRemoveUntil('/login', (_) => false);
       }
     });
+
+    final linkError = _authLinkError();
+    if (linkError != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _showLinkError(linkError));
+    }
+  }
+
+  /// Reads an auth error carried back in the redirect URL (e.g. expired link).
+  String? _authLinkError() {
+    final uri = Uri.base;
+    final params = {...uri.queryParameters, ...Uri.splitQueryString(uri.fragment)};
+    if (params['error'] == null && params['error_code'] == null) return null;
+    return (params['error_code'] ?? '').contains('expired')
+        ? 'El enlace de confirmación expiró. Solicita uno nuevo.'
+        : 'El enlace de confirmación no es válido o ya se usó. Solicita uno nuevo.';
+  }
+
+  void _showLinkError(String message) {
+    final ctx = _navigatorKey.currentContext;
+    if (ctx == null) return;
+    showDialog<void>(
+      context: ctx,
+      builder: (dctx) => AlertDialog(
+        title: const Text('Enlace no válido'),
+        content: Text(message),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dctx), child: const Text('Cerrar')),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(dctx);
+              _navigatorKey.currentState?.pushNamed('/register');
+            },
+            child: const Text('Solicitar nuevo'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
